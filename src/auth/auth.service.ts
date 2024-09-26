@@ -37,7 +37,12 @@ export class AuthService {
       expire.getMilliseconds() +
         ms(this.configService.getOrThrow<string>('JWT_EXPIRE_IN')),
     );
-    const payload = { id: user.id, email: user.email, name: user.name };
+    const payload = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      isAdmin: user.isAdmin,
+    };
     const token = this.jwtService.sign(payload);
     res.cookie('Authentication', token, {
       secure: this.configService.get('NODE_ENV') === 'production' && true,
