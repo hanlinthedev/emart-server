@@ -17,10 +17,12 @@ model User {
   id       String    @id @unique @default(uuid())
   email    String    @unique
   name     String?
+  avatar   String?
   password String
   isAdmin  Boolean   @default(false)
   address  Address[]
   reviews  Review[]
+  products Product[]
 }
 
 model Address {
@@ -44,7 +46,10 @@ model Product {
   categoryId  String?
   stock       Int
   rating      Float?
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
   reviews     Review[]
+  views       Int       @default(0)
 }
 
 model Category {

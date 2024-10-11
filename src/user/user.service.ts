@@ -19,6 +19,7 @@ export class UserService {
           id: true,
           email: true,
           name: true,
+          isAdmin: true,
         },
       });
     } catch (error) {
@@ -38,8 +39,16 @@ export class UserService {
     return `This action returns all user`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(id: string) {
+    return this.prisma.user.findUniqueOrThrow({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        isAdmin: true,
+      },
+    });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

@@ -1,13 +1,16 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
 import ms from 'ms';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -32,43 +35,49 @@ export class AuthService {
   }
 
   async login(user: User, res: Response) {
-    const expire = new Date();
-    expire.setMilliseconds(
-      expire.getMilliseconds() +
-        ms(this.configService.getOrThrow<string>('JWT_EXPIRE_IN')),
-    );
-    const payload = {
+    const expire = this.setExpire();
+    const payload = this.getPayload(user);
+    const token = this.jwtService.sign(payload);
+    this.setCookies(token, res, expire);
+    return payload;
+  }
+
+  async signup(data: CreateUserDto, res: Response) {
+    try {
+      const user = await this.userService.create(data);
+      const expire = this.setExpire();
+      const payload = this.getPayload(user);
+      const token = this.jwtService.sign(payload);
+      this.setCookies(token, res, expire);
+      return payload;
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  private getPayload(user) {
+    return {
       id: user.id,
       email: user.email,
       name: user.name,
       isAdmin: user.isAdmin,
     };
-    const token = this.jwtService.sign(payload);
+  }
+
+  private setExpire() {
+    const expire = new Date();
+    expire.setMilliseconds(
+      expire.getMilliseconds() +
+        ms(this.configService.getOrThrow<string>('JWT_EXPIRE_IN')),
+    );
+    return expire;
+  }
+
+  private setCookies(token, res, expire) {
     res.cookie('Authentication', token, {
       secure: this.configService.get('NODE_ENV') === 'production' && true,
       httpOnly: true,
       expires: expire,
     });
-    return payload;
-  }
-
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
-
-  findAll() {
-    return `This action returns all auth`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
   }
 }

@@ -1,7 +1,8 @@
-import { Controller, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { Response } from 'express';
 import { CurrentUser } from 'src/Decorators/current-user.decorator';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
@@ -13,5 +14,13 @@ export class AuthController {
   @Post('login')
   login(@CurrentUser() user: User, @Res({ passthrough: true }) res: Response) {
     return this.authService.login(user, res);
+  }
+
+  @Post('signup')
+  signup(
+    @Body() body: CreateUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.authService.signup(body, res);
   }
 }

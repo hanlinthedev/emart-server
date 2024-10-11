@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
@@ -32,14 +33,23 @@ export class ProductController {
     return this.productService.create(createProductDto);
   }
 
+  @Get('total')
+  async getTotal() {
+    return this.productService.getTotal();
+  }
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  findAll(@Query('page') page: string) {
+    return this.productService.findAll(+page);
+  }
+
+  @Get('ids')
+  getAllIds() {
+    return this.productService.getAllIds();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productService.findOne(+id);
+    return this.productService.findOne(id);
   }
 
   @Patch(':id')

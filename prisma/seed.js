@@ -23,11 +23,12 @@ async function seedProduct() {
     await prisma.product.create({
       data: {
         name: faker.commerce.productName(),
-        price: faker.number.float(),
+        price: faker.number.float({ fractionDigits: 2 }),
         description: faker.commerce.productDescription(),
         image: faker.image.url(),
         stock: faker.number.int({ min: 0, max: 100 }),
-        rating: faker.number.float({ min: 0, max: 5 }),
+        rating: faker.number.float({ min: 0, max: 5, fractionDigits: 1 }),
+        user: { connect: { id: '25affc88-4917-49a0-830b-a8a091724ab0' } },
         category: {
           connectOrCreate: {
             where: {
@@ -40,14 +41,14 @@ async function seedProduct() {
         },
         reviews: {
           create: {
-            rating: faker.number.float({ min: 0, max: 5 }),
+            rating: faker.number.float({ min: 0, max: 5, fractionDigits: 1 }),
             comment: faker.lorem.sentence(),
             user: {
               create: {
                 email: faker.internet.email(),
                 name: faker.person.fullName(),
                 password: faker.internet.password(),
-                isAdmin: faker.datatype.boolean(),
+                isAdmin: false,
                 address: {
                   create: {
                     no: faker.location.buildingNumber(),
