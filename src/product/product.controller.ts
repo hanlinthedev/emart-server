@@ -34,12 +34,16 @@ export class ProductController {
   }
 
   @Get('total')
-  async getTotal() {
-    return this.productService.getTotal();
+  async getTotal(@Query('q') q: string, @Query('category') category: string) {
+    return this.productService.getTotal({ q, category });
   }
   @Get()
-  findAll(@Query('page') page: string) {
-    return this.productService.findAll(+page);
+  findAll(
+    @Query('page') page: string,
+    @Query('q') q: string,
+    @Query('category') category: string,
+  ) {
+    return this.productService.findAll({ page, q, category });
   }
 
   @Get('ids')

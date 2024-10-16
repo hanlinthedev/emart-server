@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductFilter } from './entities/productFilter.entity';
 
 @Injectable()
 export class ProductService {
@@ -10,8 +11,23 @@ export class ProductService {
     return 'This action adds a new product';
   }
 
-  getTotal() {
-    return this.prisma.product.count();
+  getTotal(query: ProductFilter) {
+    const { q, page, category } = query;
+    return this.prisma.product.count({
+      where:
+        category !== 'undefined'
+          ? {
+              categoryId: category,
+            }
+          : q !== 'undefined'
+            ? {
+                name: {
+                  contains: q,
+                  mode: 'insensitive',
+                },
+              }
+            : {},
+    });
   }
 
   getAllIds() {
@@ -22,21 +38,40 @@ export class ProductService {
     });
   }
 
-  findAll(page: number) {
+  findAll(query: ProductFilter) {
+    const { q, page, category } = query;
+    console.log(query);
     return this.prisma.product.findMany({
-      skip: (page - 1) * 10,
-      take: 10,
+      where:
+        category !== 'undefined'
+          ? {
+              categoryId: category,
+            }
+          : q !== 'undefined'
+            ? {
+                name: {
+                  contains: q,
+                  mode: 'insensitive',
+                },
+              }
+            : {},
+      skip: (Number(page) - 1) * 20 || 0,
+      take: 20,
       select: {
         id: true,
         name: true,
         price: true,
         image: true,
         rating: true,
+        reviews: {
+          select: {
+            rating: true,
+          },
+        },
         views: true,
       },
     });
   }
-
   findOne(id: string) {
     return this.prisma.product.update({
       where: { id },
@@ -62,11 +97,13 @@ export class ProductService {
               },
             },
           },
+          orderBy: {
+            createdAt: 'desc',
+          },
         },
       },
     });
   }
-
   update(id: number, updateProductDto: UpdateProductDto) {
     return `This action updates a #${id} product`;
   }

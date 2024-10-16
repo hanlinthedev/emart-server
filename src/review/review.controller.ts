@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Patch,
@@ -10,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/Decorators/current-user.decorator';
-import { User } from 'src/user/entities/user.entity';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewService } from './review.service';
@@ -21,9 +19,9 @@ export class ReviewController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createReviewDto: CreateReviewDto, @CurrentUser() user: User) {
+  create(@Body() createReviewDto: CreateReviewDto, @CurrentUser() user) {
     console.log(user);
-    return this.reviewService.create(createReviewDto);
+    return this.reviewService.create(createReviewDto, user.id);
   }
 
   @Get()
@@ -41,8 +39,8 @@ export class ReviewController {
     return this.reviewService.update(+id, updateReviewDto);
   }
 
-  @Delete(':id')
+  @Post(':id')
   remove(@Param('id') id: string) {
-    return this.reviewService.remove(+id);
+    return this.reviewService.remove(id);
   }
 }

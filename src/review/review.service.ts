@@ -6,9 +6,9 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 @Injectable()
 export class ReviewService {
   constructor(private readonly prisma: PrismaService) {}
-  create(createReviewDto: CreateReviewDto) {
+  create(createReviewDto: CreateReviewDto, userId: string) {
     return this.prisma.review.create({
-      data: createReviewDto,
+      data: { ...createReviewDto, userId },
     });
   }
 
@@ -24,7 +24,11 @@ export class ReviewService {
     return `This action updates a #${id} review`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} review`;
+  remove(id: string) {
+    return this.prisma.review.delete({
+      where: {
+        id,
+      },
+    });
   }
 }

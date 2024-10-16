@@ -1,14 +1,15 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class CreateReviewDto {
+export class CreateCartDto {
+  @IsNotEmpty()
+  @IsNumber()
+  quantity;
+
+  @IsNotEmpty()
   @IsString()
-  comment: string;
+  productId;
 
   @IsNotEmpty()
   @IsNumber()
-  rating: number;
-
-  @IsNotEmpty()
-  @IsString()
-  productId: string;
+  subTotal;
 }
