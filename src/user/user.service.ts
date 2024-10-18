@@ -29,6 +29,21 @@ export class UserService {
     }
   }
 
+  async getUserStat(user: User) {
+    const cartCount = await this.prisma.cartItem.count({
+      where: {
+        userId: user.id,
+      },
+    });
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      isAdmin: user.isAdmin,
+      cartCount,
+    };
+  }
+
   getUser(filter: Prisma.UserWhereUniqueInput) {
     return this.prisma.user.findUniqueOrThrow({
       where: filter,
