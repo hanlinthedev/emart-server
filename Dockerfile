@@ -2,9 +2,9 @@ FROM node:lts-alpine AS development
 
 WORKDIR /usr/src/app
 
-COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
+COPY package*.json ./
 
-RUN npm install  --silent 
+RUN npm install
 
 COPY . .
 
@@ -23,9 +23,9 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
-COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
+COPY package*.json ./
 
-RUN npm install --production --omit=dev --silent 
+RUN npm install --production --omit=dev
 
 COPY . .
 
