@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
 
-RUN npm install  --silent && mv node_modules ../
+RUN npm install  --silent 
 
 COPY . .
 
@@ -25,13 +25,13 @@ WORKDIR /usr/src/app
 
 COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
 
-RUN npm install --production --omit=dev --silent && mv node_modules ../
+RUN npm install --production --omit=dev --silent 
 
-COPY --from=development /usr/src/app/dist ./dist
-
-COPY --from=development /usr/src/app/prisma ./prisma
+COPY . .
 
 RUN npx prisma generate
+
+COPY --from=development /usr/src/app/dist ./dist
 
 EXPOSE 3001
 
