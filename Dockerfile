@@ -1,4 +1,4 @@
-FROM node:lts-alpine AS development
+FROM node:alpine AS development
 
 WORKDIR /usr/src/app
 
@@ -10,22 +10,19 @@ COPY . .
 
 RUN npx prisma generate
 
-RUN chown -R node /usr/src/app
-
-USER node
 
 RUN npm run build
 
-FROM node:lts-alpine AS production 
+FROM node:alpine AS prod 
 
-ARG NODE_ENV=production
+ARG NODE_ENV=prod
 ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install --production --omit=dev
+RUN npm install --omit=dev
 
 COPY . .
 
