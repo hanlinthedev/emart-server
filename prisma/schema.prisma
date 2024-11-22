@@ -21,24 +21,10 @@ model User {
   createdAt DateTime   @default(now())
   password  String
   isAdmin   Boolean    @default(false)
-  address   Address[]
   reviews   Review[]
   products  Product[]
   cartItem  CartItem[]
   orders    Order[]
-  vouchers  Voucher[]
-}
-
-model Address {
-  id        String   @id @unique @default(uuid())
-  no        String
-  street    String
-  quarter   String
-  city      String
-  state     String
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  createdAt DateTime @default(now())
 }
 
 model Product {
@@ -62,12 +48,12 @@ model Product {
 model Order {
   id          String      @id @unique @default(uuid())
   orderNumber String      @unique @default(uuid())
+  paymentType PaymentType
   user        User        @relation(fields: [userId], references: [id])
   userId      String
   cartItem    CartItem[]
   total       Float
-  status      OrderStatus @default(PENDING)
-  voucher     Voucher?
+  status      OrderStatus @default(pending)
   createdAt   DateTime    @default(now())
 }
 
@@ -83,18 +69,6 @@ model CartItem {
   orderId    String?
   checkedOut Boolean  @default(false)
   createdAt  DateTime @default(now())
-}
-
-model Voucher {
-  id        String   @id @unique @default(uuid())
-  amount    Float
-  currency  String
-  date      DateTime
-  order     Order    @relation(fields: [orderId], references: [id])
-  orderId   String   @unique
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  createdAt DateTime @default(now())
 }
 
 model Category {
@@ -116,7 +90,12 @@ model Review {
 }
 
 enum OrderStatus {
-  PENDING
-  PROCESSING
-  SHIPPED
+  pending
+  shipping
+  complete
+}
+
+enum PaymentType {
+  card
+  cash
 }

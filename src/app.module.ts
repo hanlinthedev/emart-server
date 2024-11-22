@@ -10,6 +10,7 @@ import { ProductModule } from './product/product.module';
 import { ReviewModule } from './review/review.module';
 import { SseModule } from './sse/sse.module';
 import { UserModule } from './user/user.module';
+import { CheckoutModule } from './checkout/checkout.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { UserModule } from './user/user.module';
     CartModule,
     PrismaModule,
     SseModule,
+    CheckoutModule,
   ],
 })
 export class AppModule {}

@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Patch,
@@ -41,7 +40,6 @@ export class CartController {
     @Body() createCartDto: CreateCartDto,
     @CurrentUser() user: User,
   ) {
-    console.log(createCartDto);
     const data = await this.cartService.create(createCartDto, user.id);
     const cartCount = await this.cartService.getCartCount(user.id);
     this.sse.emitToClient(user.id, {
@@ -51,9 +49,10 @@ export class CartController {
     return data;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.cartService.findAll();
+  findAll(@CurrentUser() user: User) {
+    return this.cartService.findAll(user.id);
   }
 
   @Get(':id')
@@ -66,8 +65,18 @@ export class CartController {
     return this.cartService.update(+id, updateCartDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  @Post(':id')
+  async remove(@Param('id') id: string, @CurrentUser() user: User) {
+    const data = await this.cartService.removeItemFormCart(id);
+    const cartCount = await this.cartService.getCartCount(user.id);
+    if (data === 'success') {
+      this.sse.emitToClient(user.id, {
+        data: { cartCount },
+        event: 'cartCount',
+      });
+      return data;
+    }
+    return data;
   }
 }

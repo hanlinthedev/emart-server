@@ -13,11 +13,26 @@ export class CartService {
   }
 
   getCartCount(userId: string) {
-    return this.prisma.cartItem.count({ where: { userId } });
+    return this.prisma.cartItem.count({ where: { userId, checkedOut: false } });
   }
 
-  findAll() {
-    return `This action returns all cart`;
+  findAll(id: string) {
+    return this.prisma.cartItem.findMany({
+      where: { userId: id, checkedOut: false },
+      select: {
+        id: true,
+        product: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            image: true,
+          },
+        },
+        quantity: true,
+        subTotal: true,
+      },
+    });
   }
 
   findOne(id: number) {
@@ -28,7 +43,12 @@ export class CartService {
     return `This action updates a #${id} cart`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cart`;
+  async removeItemFormCart(id: string) {
+    try {
+      await this.prisma.cartItem.delete({ where: { id } });
+      return 'success';
+    } catch (error) {
+      return 'error';
+    }
   }
 }
