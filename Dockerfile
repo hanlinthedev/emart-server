@@ -10,8 +10,6 @@ COPY . .
 
 RUN npx prisma generate
 
-RUN npm run seed
-
 RUN chown -R node /usr/src/app
 
 USER node
