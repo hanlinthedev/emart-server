@@ -33,6 +33,7 @@ export class UserService {
     const cartCount = await this.prisma.cartItem.count({
       where: {
         userId: user.id,
+        checkedOut: false,
       },
     });
     return {
