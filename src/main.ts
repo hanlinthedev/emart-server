@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   app.enableCors({
-    origin: ['http://localhost:3000', 'https://onmart.vercel.app/'], // Allow requests from this origin
+    origin: '*', // Allow requests from this origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Specify allowed methods
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
   });
