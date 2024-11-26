@@ -5,12 +5,13 @@ import { LoggerModule } from 'nestjs-pino';
 import { AuthModule } from './auth/auth.module';
 import { CartModule } from './cart/cart.module';
 import { CategoryModule } from './category/category.module';
+import { CheckoutModule } from './checkout/checkout.module';
+import { HealthController } from './health.controller';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProductModule } from './product/product.module';
 import { ReviewModule } from './review/review.module';
 import { SseModule } from './sse/sse.module';
 import { UserModule } from './user/user.module';
-import { CheckoutModule } from './checkout/checkout.module';
 
 @Module({
   imports: [
@@ -46,5 +47,6 @@ import { CheckoutModule } from './checkout/checkout.module';
     SseModule,
     CheckoutModule,
   ],
+  controllers: [HealthController],
 })
 export class AppModule {}
