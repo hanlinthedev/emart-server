@@ -10,6 +10,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   app.enableCors({
     origin: configService.getOrThrow('ALLOWED_ORIGIN'), // Allow requests from this origin
+
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Specify allowed methods
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
   });

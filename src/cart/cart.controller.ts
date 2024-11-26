@@ -28,6 +28,7 @@ export class CartController {
   @UseGuards(JwtAuthGuard)
   @Sse('sse')
   push(@CurrentUser() user: User, @Res({ passthrough: true }) res: Response) {
+    console.log('sse', user);
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
