@@ -5,15 +5,12 @@ import {
   Param,
   Patch,
   Post,
-  Res,
-  Sse,
   UseGuards,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { Response } from 'express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/decorators/current-user.decorator';
-import { SseService } from 'src/sse/sse.service';
+import { SocketGateway } from 'src/global/socket.gateway';
 import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
@@ -22,18 +19,8 @@ import { UpdateCartDto } from './dto/update-cart.dto';
 export class CartController {
   constructor(
     private readonly cartService: CartService,
-    private readonly sse: SseService,
+    private readonly socket: SocketGateway,
   ) {}
-
-  @UseGuards(JwtAuthGuard)
-  @Sse('sse')
-  push(@CurrentUser() user: User, @Res({ passthrough: true }) res: Response) {
-    console.log('sse', user);
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    return this.sse.addClient(user.id);
-  }
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -42,11 +29,7 @@ export class CartController {
     @CurrentUser() user: User,
   ) {
     const data = await this.cartService.create(createCartDto, user.id);
-    const cartCount = await this.cartService.getCartCount(user.id);
-    this.sse.emitToClient(user.id, {
-      data: { cartCount },
-      event: 'cartCount',
-    });
+    this.socket.emitToClient('CartUpdated', user.id);
     return data;
   }
 
@@ -54,6 +37,12 @@ export class CartController {
   @Get()
   findAll(@CurrentUser() user: User) {
     return this.cartService.findAll(user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('cartCount')
+  getTotalCartCount(@CurrentUser() user: User) {
+    return this.cartService.getCartCount(user.id);
   }
 
   @Get(':id')
@@ -70,14 +59,8 @@ export class CartController {
   @Post(':id')
   async remove(@Param('id') id: string, @CurrentUser() user: User) {
     const data = await this.cartService.removeItemFormCart(id);
-    const cartCount = await this.cartService.getCartCount(user.id);
-    if (data === 'success') {
-      this.sse.emitToClient(user.id, {
-        data: { cartCount },
-        event: 'cartCount',
-      });
-      return data;
-    }
+    this.socket.emitToClient('CartUpdated', user.id);
+
     return data;
   }
 }

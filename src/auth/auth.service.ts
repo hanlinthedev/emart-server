@@ -55,6 +55,17 @@ export class AuthService {
     }
   }
 
+  verifyJwt(token: string) {
+    try {
+      const payload = this.jwtService.verify(token, {
+        secret: this.configService.getOrThrow('JWT_SECRET'),
+      });
+      return payload;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+
   private getPayload(user) {
     return {
       id: user.id,
@@ -76,6 +87,7 @@ export class AuthService {
   private setCookies(token, res, expire) {
     res.cookie('Authentication', token, {
       secure: this.configService.get('NODE_ENV') === 'production' && true,
+      sameSite: false,
       httpOnly: true,
       expires: expire,
     });
