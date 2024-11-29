@@ -16,11 +16,15 @@ export class SocketGateway {
     const socketId = socket.id;
     const token = socket.handshake.auth.token;
     const payload = this.authService.verifyJwt(token);
-    console.log('payload', payload);
-    this.clients.set(payload.id, socketId);
+    if (!payload) {
+      socket.disconnect();
+      return;
+    }
+    this.clients.has(payload.id) ? '' : this.clients.set(payload.id, socketId);
   }
 
   emitToClient(eventType: any, userId: string) {
-    this.socketServer.to(userId).emit(eventType);
+    const socketId = this.clients.get(userId);
+    this.socketServer.to(socketId).emit(eventType);
   }
 }
