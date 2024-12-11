@@ -1,6 +1,6 @@
 const { faker } = require('@faker-js/faker');
 const PrismaClient = require('@prisma/client').PrismaClient;
-
+const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 prisma.$connect();
@@ -10,7 +10,7 @@ async function seedProduct() {
     data: {
       name: 'John Doe',
       email: 'user@admin.com',
-      password: 'Adminpassword1!',
+      password: await bcrypt.hash('Admin12345!', 10),
       isAdmin: true,
       avatar: faker.image.avatar(),
     },

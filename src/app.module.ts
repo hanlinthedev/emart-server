@@ -13,6 +13,7 @@ import { ProductModule } from './product/product.module';
 import { ReviewModule } from './review/review.module';
 
 import { UserModule } from './user/user.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { UserModule } from './user/user.module';
     PrismaModule,
     CheckoutModule,
     GlobalModule,
+    OrderModule,
   ],
   controllers: [HealthController],
 })

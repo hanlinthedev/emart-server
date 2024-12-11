@@ -25,6 +25,7 @@ export class SocketGateway {
 
   emitToClient(eventType: any, userId: string) {
     const socketId = this.clients.get(userId);
+    console.log('Socket ID to sent', socketId);
     this.socketServer.to(socketId).emit(eventType);
   }
 }
