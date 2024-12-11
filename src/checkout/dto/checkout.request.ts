@@ -1,7 +1,5 @@
-import { PaymentType } from '@prisma/client';
 import { Type as TypeDecorator } from 'class-transformer';
 import {
-  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsPositive,
@@ -21,8 +19,7 @@ class ProductItemDto {
 }
 export class CheckoutRequestDto {
   @IsNotEmpty()
-  @IsEnum(PaymentType, { message: 'Invalid payment method' })
-  paymentMethod: PaymentType;
+  paymentMethod: string;
 
   @ValidateNested({ each: true })
   @TypeDecorator(() => ProductItemDto)

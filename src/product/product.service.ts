@@ -23,7 +23,6 @@ export class ProductService {
             ? {
                 name: {
                   contains: q,
-                  mode: 'insensitive',
                 },
               }
             : {},
@@ -51,7 +50,6 @@ export class ProductService {
             ? {
                 name: {
                   contains: q,
-                  mode: 'insensitive',
                 },
               }
             : {},
