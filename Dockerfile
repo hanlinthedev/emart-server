@@ -28,6 +28,8 @@ WORKDIR /usr/src/app
 
 COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
 
+RUN apk add --no-cache openssl
+
 RUN npm install --production --omit=dev --silent && mv node_modules ../
 
 COPY --from=build /usr/src/app/dist ./dist
