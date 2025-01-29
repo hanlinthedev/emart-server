@@ -14,13 +14,14 @@ export class SocketGateway {
   constructor(private readonly authService: AuthService) {}
   handleConnection(socket: Socket) {
     const socketId = socket.id;
+
     const token = socket.handshake.auth.token;
-    const payload = this.authService.verifyJwt(token);
-    if (!payload) {
+    // const payload = this.authService.verifyJwt(token);
+    if (!token.id) {
       socket.disconnect();
       return;
     }
-    this.clients.has(payload.id) ? '' : this.clients.set(payload.id, socketId);
+    this.clients.has(token.id) ? '' : this.clients.set(token.id, socketId);
   }
 
   emitToClient(eventType: any, userId: string) {

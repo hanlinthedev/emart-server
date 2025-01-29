@@ -15,6 +15,11 @@ export class OrderService {
       where: {
         userId,
       },
+      include: {
+        user: true,
+
+        cartItem: true,
+      },
     });
   }
 
