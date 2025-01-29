@@ -110,7 +110,7 @@ export class CheckoutService {
     cartItems: any,
   ) {
     try {
-      await this.prisma.$transaction(async (prisma) => {
+      await this.prisma.$transaction(async () => {
         const createOrder = await this.prisma.order.create({
           data: {
             userId,
